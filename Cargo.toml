@@ -1,0 +1,9 @@
+[package]
+name = "WIK-DPS-TP01"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+warp = "0.3.7"
+tokio = { version = "1.42.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }

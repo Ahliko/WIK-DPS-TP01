@@ -6,7 +6,6 @@ version = 4
 name = "WIK-DPS-TP01"
 version = "0.1.0"
 dependencies = [
- "serde",
  "tokio",
  "warp",
 ]

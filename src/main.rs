@@ -1,12 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::env;
 use warp::Filter;
-
-#[derive(Serialize, Deserialize)]
-struct HeadersResponse {
-    headers: HashMap<String, String>,
-}
 
 #[tokio::main]
 async fn main() {
@@ -21,12 +15,8 @@ async fn main() {
                     value.to_str().unwrap_or("Invalid UTF-8").to_string(),
                 );
             }
-
-            let response = HeadersResponse {
-                headers: headers_map,
-            };
             warp::reply::with_header(
-                warp::reply::json(&response),
+                warp::reply::json(&headers_map),
                 "Content-Type",
                 "application/json",
             )

@@ -1,0 +1,9 @@
+target/
+docker2/
+.gitignore
+LICENSE
+README.md
+trivy-scan-alpine.txt
+trivy-scan.txt
+Dockerfile
+.idea/

@@ -1,9 +1,21 @@
 use std::collections::HashMap;
 use std::env;
+use std::sync::{Arc, Mutex};
 use warp::Filter;
+use tokio::signal;
 
 #[tokio::main]
 async fn main() {
+    let running = Arc::new(Mutex::new(true));
+    let running_clone = Arc::clone(&running);
+
+    tokio::spawn(async move {
+        signal::ctrl_c().await.expect("Erreur lors de l'attente du signal Ctrl+C");
+        let mut running = running_clone.lock().unwrap();
+        *running = false;
+        println!("Interruption reçue, arrêt en cours...");
+    });
+
     let headers_route = warp::path!("ping")
         .and(warp::get())
         .and(warp::header::headers_cloned())
@@ -31,6 +43,15 @@ async fn main() {
     let routes = headers_route.or(not_found_route);
 
     let value = env::var("PING_LISTEN_PORT").unwrap_or_else(|_| "3030".to_string()).parse().unwrap();
+    let server = warp::serve(routes).run(([0, 0, 0, 0], value));
 
-    warp::serve(routes).run(([127, 0, 0, 1], value)).await;
+    tokio::select! {
+        _ = server => {},
+        _ = signal::ctrl_c() => {
+            let mut running = running.lock().unwrap();
+            *running = false;
+        }
+    }
+
+    println!("Serveur arrêté.");
 }

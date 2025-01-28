@@ -3,6 +3,10 @@ name = "WIK-DPS-TP01"
 version = "0.1.0"
 edition = "2021"
 
+[[bin]]
+name = "WIK-DPS-TP01"
+path = "src/main.rs"
+
 [dependencies]
 warp = "0.3.7"
 tokio = { version = "1.42.0", features = ["full"] }

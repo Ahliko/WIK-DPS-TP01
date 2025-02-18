@@ -1,47 +1,15 @@
 services:
-    web1:
+    web:
         build:
             context: ..
             dockerfile: Dockerfile
-        hostname: web1
         restart: on-failure
         environment:
             PING_LISTEN_PORT: 3030
         networks:
             front:
-
-    web2:
-        build:
-            context: ..
-            dockerfile: Dockerfile
-        hostname: web2
-        restart: on-failure
-        environment:
-            PING_LISTEN_PORT: 3030
-        networks:
-            front:
-
-    web3:
-        build:
-            context: ..
-            dockerfile: Dockerfile
-        hostname: web3
-        restart: on-failure
-        environment:
-            PING_LISTEN_PORT: 3030
-        networks:
-            front:
-
-    web4:
-        build:
-            context: ..
-            dockerfile: Dockerfile
-        hostname: web4
-        restart: on-failure
-        environment:
-            PING_LISTEN_PORT: 3030
-        networks:
-            front:
+        deploy:
+            replicas: 4
 
     nginx:
         image: nginx:alpine
@@ -52,6 +20,8 @@ services:
         restart: on-failure
         networks:
             front:
+        depends_on:
+            -   web
 
 networks:
     front:

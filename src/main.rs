@@ -3,6 +3,7 @@ use std::env;
 use std::sync::{Arc, Mutex};
 use warp::Filter;
 use tokio::signal;
+use hostname;
 
 #[tokio::main]
 async fn main() {
@@ -16,10 +17,13 @@ async fn main() {
         println!("Interruption reçue, arrêt en cours...");
     });
 
+    let hostname = hostname::get()
+        .unwrap_or_else(|_| "unknown-host".to_string().parse().unwrap());
+
     let headers_route = warp::path!("ping")
         .and(warp::get())
         .and(warp::header::headers_cloned())
-        .map(|headers: warp::http::HeaderMap| {
+        .map(move |headers: warp::http::HeaderMap| {
             let mut headers_map = HashMap::new();
             for (key, value) in headers.iter() {
                 headers_map.insert(
@@ -27,6 +31,9 @@ async fn main() {
                     value.to_str().unwrap_or("Invalid UTF-8").to_string(),
                 );
             }
+            // Ajouter le hostname dans la réponse JSON
+            headers_map.insert("Hostname".to_string(), hostname.clone().to_str().unwrap().to_string());
+
             warp::reply::with_header(
                 warp::reply::json(&headers_map),
                 "Content-Type",
